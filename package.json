@@ -1,0 +1,13 @@
+{
+  "name": "delayedTasks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Stanislav",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "bluebird": "^3.7.1",
+    "config": "^3.2.4",
+    "redis": "2.8.0"
+  }
+}
