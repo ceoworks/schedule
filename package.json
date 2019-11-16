@@ -1,13 +1,19 @@
 {
-  "name": "delayedTasks",
+  "name": "delayed-tasks",
   "version": "1.0.0",
   "main": "index.js",
   "author": "Stanislav",
   "license": "MIT",
   "private": false,
   "dependencies": {
-    "bluebird": "^3.7.1",
-    "config": "^3.2.4",
-    "redis": "2.8.0"
+    "bluebird": "3.7.1",
+    "config": "3.2.4",
+    "redis": "2.8.0",
+    "uuid": "3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "6.1.0",
+    "eslint-config-airbnb-base": "14.0.0",
+    "eslint-plugin-import": "2.18.2"
   }
 }
