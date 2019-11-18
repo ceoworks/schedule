@@ -5,18 +5,22 @@
   "author": "Stanislav",
   "license": "MIT",
   "private": false,
+  "scripts": {
+    "start": "nodemon ./src/app.js"
+  },
   "dependencies": {
     "bluebird": "3.7.1",
     "config": "3.2.4",
-    "koa": "^2.11.0",
-    "koa-bodyparser": "^4.2.1",
-    "koa-router": "^7.4.0",
+    "koa": "2.11.0",
+    "koa-bodyparser": "4.2.1",
+    "koa-router": "7.4.0",
     "redis": "2.8.0",
     "uuid": "3.3.3"
   },
   "devDependencies": {
     "eslint": "6.1.0",
     "eslint-config-airbnb-base": "14.0.0",
-    "eslint-plugin-import": "2.18.2"
+    "eslint-plugin-import": "2.18.2",
+    "nodemon": "1.19.4"
   }
 }

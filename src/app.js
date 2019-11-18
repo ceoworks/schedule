@@ -12,5 +12,5 @@ app.use(bodyParser());
 app.use(setupRoutes());
 
 app.listen(port, () => {
-  console.log(`App is listening on port: ${port}`);
+  console.log(`App is available at: http://localhost:${port}`);
 });
