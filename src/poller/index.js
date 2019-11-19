@@ -6,6 +6,9 @@ const timeout = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 function logMessage(label, message = '') {
   console.log(`${label} @ ${Date.now()}`, message);
 }
+function getLockTimestamp() {
+  return Date.now() + lockTimeout;
+}
 async function processScheduledTasks() {
   const currentTimestamp = Date.now().toString();
   const scheduledTasks = await redisClient.zrangebyscoreAsync(delayedTasksKey, '-inf', currentTimestamp);
@@ -16,12 +19,16 @@ async function processScheduledTasks() {
   logMessage('Processing tasks', scheduledTasks.length);
   const taskPromises = scheduledTasks.map(async (taskJson) => {
     const task = JSON.parse(taskJson);
-    const setResult = await redisClient.setnxAsync(task.id, Date.now() + lockTimeout);
+    const setResult = await redisClient.setnxAsync(task.id, getLockTimestamp());
     if (setResult === 0) {
-      // GET key and check timestamp
-      // if task is still locked - sleep
-      // else try to renew lock with GETSET operation
-      return Promise.resolve();
+      const taskLockTimestamp = await redisClient.getAsync(task.id);
+      if (parseInt(taskLockTimestamp, 10) > Date.now()) {
+        return Promise.resolve();
+      }
+      const recentTaskLockTimestamp = await redisClient.getsetAsync(task.id, getLockTimestamp());
+      if (recentTaskLockTimestamp !== taskLockTimestamp) {
+        return Promise.resolve();
+      }
     }
     logMessage('Scheduled message', task.message);
     return redisClient.zremAsync(delayedTasksKey, taskJson);
