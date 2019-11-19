@@ -1,4 +1,4 @@
-const {delayedTasksKey} = require('config');
+const {delayedTasksKey, lockTimeout} = require('config');
 
 const redisClient = require('../src/db/redis');
 const taskService = require('../src/service/taskService');
@@ -19,13 +19,43 @@ describe('when testing tasks scheduling', () => {
     const timestamp = Date.now() + delay;
     const testTask = {message: `I am a test task ${timestamp}`, timestamp};
     const scheduleResult = await taskService.scheduleTask(testTask);
-    expect(scheduleResult).toEqual(1);
+    expect(scheduleResult).toHaveProperty('id');
+    expect(scheduleResult).toHaveProperty('message');
+
     const processTasksResult = await processScheduledTasks();
-    console.log('processTasksResult:', processTasksResult);
     expect(processTasksResult).toEqual('No expired tasks yet');
+
     await timeout(delay);
     const processedTasks = await processScheduledTasks();
-    console.log('processedTasks:', processedTasks);
     expect(processedTasks[0].message).toEqual(testTask.message);
+  });
+  test('it should not process locked task', async () => {
+    const timestamp = Date.now();
+    const testTask = {message: `I am a test task ${timestamp}`, timestamp};
+    const {id} = await taskService.scheduleTask(testTask);
+    redisClient.setnx(id, Date.now() + lockTimeout);
+
+    const processTasksResult = await processScheduledTasks();
+    expect(processTasksResult).toEqual(['sleep']);
+
+    await timeout(lockTimeout);
+    const processedTasks = await processScheduledTasks();
+    expect(processedTasks[0].message).toEqual(testTask.message);
+  });
+  test('it should succesfully resolve race condition', async () => {
+    const timestamp = Date.now();
+    const testTask = {message: `I am a test task ${timestamp}`, timestamp};
+    await taskService.scheduleTask(testTask);
+
+    const [firstWorkerResult, secondWorkerResult] = await Promise.all([
+      processScheduledTasks(),
+      processScheduledTasks(),
+    ]);
+    expect(firstWorkerResult[0].message).toEqual(testTask.message);
+    expect(secondWorkerResult).toEqual(['sleep']);
+
+    await timeout(lockTimeout);
+    const processedTasks = await processScheduledTasks();
+    expect(processedTasks).toEqual('No expired tasks yet');
   });
 });

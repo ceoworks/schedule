@@ -12,7 +12,8 @@ async function scheduleTask({message, timestamp}) {
     message,
   };
   const taskJson = JSON.stringify(taskData);
-  return addTaskToSet(taskJson, timestamp);
+  await addTaskToSet(taskJson, timestamp);
+  return taskData;
 }
 
 module.exports = {
