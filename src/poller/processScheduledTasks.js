@@ -47,8 +47,9 @@ async function handleTask(taskJson) {
 async function processScheduledTasks() {
   const scheduledTasks = await getExpiredTasks();
   if (!scheduledTasks.length) {
-    logMessage('No expired tasks yet');
-    return Promise.resolve();
+    const message = 'No expired tasks yet';
+    logMessage(message);
+    return message;
   }
   logMessage('Processing tasks', scheduledTasks.length);
   const taskPromises = scheduledTasks.map(handleTask);
