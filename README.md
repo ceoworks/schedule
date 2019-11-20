@@ -10,4 +10,4 @@
 
 5. In a separated terminal start poller `yarn poll`
 
-6. Schedule some task with request `curl -d '{"message":"Hello there scheduled task!", "timestamp":"1574145807443"}' -H "Content-Type: application/json" -X POST http://localhost:21212/api/tasks`
+6. Schedule some task with request `curl -d '{"message":"Hello there scheduled task!", "timestamp":"1574145807443"}' -H "Content-Type: application/json" -X POST http://localhost:21212/api/echoAtTime`
